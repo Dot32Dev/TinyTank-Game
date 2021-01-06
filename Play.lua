@@ -466,8 +466,7 @@ function Play.draw()
 
 			menu.tank.xV = 0
 			if love.mouse.getX() > love.graphics.getWidth()/2-85 and love.mouse.getX() < love.graphics.getWidth()/2+85 
-			and love.mouse.getY() > love.graphics.getHeight()/2+70-30-30 and love.mouse.getY() < love.graphics.getHeight()/2+70+30+a
-			 
+			and love.mouse.getY() > love.graphics.getHeight()/2+70-30+a and love.mouse.getY() < love.graphics.getHeight()/2+70+30+a
 			then
 				love.graphics.setColour(1,1,1)
 				love.mouse.setCursor(selected)
