@@ -39,6 +39,7 @@ function Play.load()
 	menu.time = 0.5
 	menu.levelTimer = 0
 	menu.pause = false
+	menu.transitionHint = ""
 
 	require("maps")
 	love.math.setRandomSeed(os.time())
@@ -124,20 +125,45 @@ function Play.update(dt)
 		menu.timer = menu.timer + dt
 		menu.play.transitionX = love.graphics.getWidth()
 	end
+	if menu.timer == false then
+		menu.play.transitionX = menu.play.transitionX + (love.graphics.getWidth()-menu.play.transitionX)*0.3
+	end
 
 	menu.levelTimer = menu.levelTimer + dt
 
 	if menu.timer ~= false and menu.timer > menu.time then
 		menu.play.transitionX = menu.play.transitionX + (0-menu.play.transitionX)*0.3
 		if menu.play.transitionX < 10 then
-			if #evil > 0 then 
-				setLevel(play.state)
-				menu.time = 0.5
+			if menu.transitionHint ~= "" then
+				menu.levelTimer = 0
+				love.graphics.setBackgroundColour(0.35, 0.6, 0.99)
+				play.state = menu.transitionHint
+				menu.transitionHint = ""
+				love.mouse.setCursor()
+
+				if map[play.state] ~= nil then
+					love.graphics.setBackgroundColour(0.49, 0.31, 0.25)
+					particles.burnt = {}
+					player.bullets = {}
+					evil = {}
+					evil.bullets = {}
+
+					player.health = 100
+					player.x = 150
+					player.y = 450
+
+					for i=1, #map[play.state] do
+						if map[play.state][i].o == "evil" then
+							table.insert(evil, newEvil(map[play.state][i].x, map[play.state][i].y))
+						end
+					end
+				end
 			else
 				setLevel(play.state+1)
 			end
 			menu.time = 0.5
 			menu.timer = false
+			menu.transitionHint = ""
 		end
 	end
 
@@ -155,32 +181,32 @@ function Play.update(dt)
 		camera.yV = 0
 	end
 
-	if play.state == "menuTransition" then
-		menu.play.transitionX = menu.play.transitionX + (0-menu.play.transitionX)*0.3
-		if menu.play.transitionX < 10 then
-			setLevel(1)
-		end
-	elseif play.state ~= "menuTransition" and menu.timer == false then
-		menu.play.transitionX = menu.play.transitionX + (love.graphics.getWidth()-menu.play.transitionX)*0.3
-	elseif menu.timer == false then
-		menu.play.transitionX = love.graphics.getWidth()
-	end
+	-- if play.state == "menuTransition" then
+	-- 	menu.play.transitionX = menu.play.transitionX + (0-menu.play.transitionX)*0.3
+	-- 	if menu.play.transitionX < 10 then
+	-- 		setLevel(1)
+	-- 	end
+	-- elseif play.state ~= "menuTransition" and menu.timer == false then
+	-- 	menu.play.transitionX = menu.play.transitionX + (love.graphics.getWidth()-menu.play.transitionX)*0.3
+	-- elseif menu.timer == false then
+	-- 	menu.play.transitionX = love.graphics.getWidth()
+	-- end
 	menu.tiny.xV = menu.tiny.xV + (love.graphics.getWidth()/2-menu.tiny.x)*0.1
-	menu.tiny.yV = menu.tiny.yV + (love.graphics.getHeight()/2-200-menu.tiny.y)*0.1
+	menu.tiny.yV = menu.tiny.yV + (love.graphics.getHeight()/2-250-menu.tiny.y)*0.1
 	menu.tiny.xV = menu.tiny.xV*0.8
 	menu.tiny.yV = menu.tiny.yV*0.8
 	menu.tiny.x = menu.tiny.x + menu.tiny.xV
 	menu.tiny.y = menu.tiny.y + menu.tiny.yV
 
 	menu.tank.xV = menu.tank.xV + (love.graphics.getWidth()/2-menu.tank.x)*0.1
-	menu.tank.yV = menu.tank.yV + (love.graphics.getHeight()/2-100-menu.tank.y)*0.1
+	menu.tank.yV = menu.tank.yV + (love.graphics.getHeight()/2-150-menu.tank.y)*0.1
 	menu.tank.xV = menu.tank.xV*0.8
 	menu.tank.yV = menu.tank.yV*0.8
 	menu.tank.x = menu.tank.x + menu.tank.xV
 	menu.tank.y = menu.tank.y + menu.tank.yV
 
 	--[[THe actual gAmeplay]]
-	if not (play.state == "menu" or play.state == "menuTransition") and menu.pause == false then
+	if not (play.state == "menu"  or play.state == "levels") and menu.pause == false then
 		player.turretLength = player.turretLength + (30-player.turretLength)*0.25
 
 		if (love.keyboard.isDown("right") or love.keyboard.isDown("d")) and player.health > 0 then
@@ -325,8 +351,8 @@ function Play.update(dt)
 			end
 		end
 
-		player.xV = player.xV*(0.9^60)^dt--/(1 + 5*dt)
-		player.yV = player.yV*(0.9^60)^dt--/(1 + 5*dt)
+		player.xV = player.xV*0.9--(0.9^60)^dt--/(1 + 5*dt)
+		player.yV = player.yV*0.9--(0.9^60)^dt--/(1 + 5*dt)
 		player.hitTimer = player.hitTimer - 1
 
 		if love.mouse.isDown(1) and player.attackTimer > 0.4 and player.health > 0 then
@@ -389,8 +415,13 @@ function Play.update(dt)
 				player.xV = player.xV + math.sin(math.atan2(player.x-v.x, player.y-v.y))*5
 				player.yV = player.yV + math.cos(math.atan2(player.x-v.x, player.y-v.y))*5
 
+				camera.x = camera.x + math.sin(math.atan2(player.x-v.x, player.y-v.y))*10
+				camera.y = camera.y + math.cos(math.atan2(player.x-v.x, player.y-v.y))*10
+
 				if player.health <= 0 then
 					explosion(player.x, player.y)
+					camera.x = camera.x + math.sin(math.atan2(player.x-v.x, player.y-v.y))*20
+				camera.y = camera.y + math.cos(math.atan2(player.x-v.x, player.y-v.y))*20
 				end
 			end
 		end  
@@ -418,10 +449,11 @@ end
 
 
 
+
 function Play.draw()
 	love.graphics.translate(math.floor(camera.x), math.floor(camera.y))
 
-	if play.state == "menu" or play.state == "menuTransition" then
+	if play.state == "menu"  then
 		love.mouse.setCursor()
 
 		love.graphics.setColour(0.35*0.7, 0.6*0.7, 0.99*0.7)
@@ -430,65 +462,132 @@ function Play.draw()
 		love.graphics.print("Tank", menu.tank.x-intro.dot32.font:getWidth("Tank")/2, menu.tank.y)
 
 		if math.floor(menu.tank.xV*100)/100 == 0 or DotLib.timer > 1 then
+			local a = -50
+
 			menu.tank.xV = 0
 			if love.mouse.getX() > love.graphics.getWidth()/2-85 and love.mouse.getX() < love.graphics.getWidth()/2+85 
-			and love.mouse.getY() > love.graphics.getHeight()/2+70-30 and love.mouse.getY() < love.graphics.getHeight()/2+70+30
-			or play.state == "menuTransition" 
+			and love.mouse.getY() > love.graphics.getHeight()/2+70-30-30 and love.mouse.getY() < love.graphics.getHeight()/2+70+30+a
+			 
 			then
 				love.graphics.setColour(1,1,1)
 				love.mouse.setCursor(selected)
-				if love.mouse.isDown(1) or play.state == "menuTransition" then
+				if love.mouse.isDown(1)  then
 					--love.graphics.draw(menu.play.image2, love.graphics.getWidth()/2, love.graphics.getHeight()/2+50, 0, 0.5, 0.5, menu.play.image:getWidth()/2, menu.play.image:getHeight()/2)
-					love.graphics.rectangle("fill", love.graphics.getWidth()/2-85, love.graphics.getHeight()/2+70-30, 170, 60, 30)
-					play.state = "menuTransition"
+					love.graphics.rectangle("fill", love.graphics.getWidth()/2-85, love.graphics.getHeight()/2+70-30+a, 170, 60, 30)
+					--play.state = "menuTransition"
+					menu.transitionHint = 1
+					menu.timer = 0
+    			menu.time = 0
+					--menu.transitionHint = "1"
 					--sound.shoot:stop() sound.shoot:play()
 					sound.shootD:play()
 					love.mouse.setCursor()
 				end
 			end
 			love.graphics.setLineWidth(5)
-			love.graphics.rectangle("line", love.graphics.getWidth()/2-85, love.graphics.getHeight()/2+70-30, 170, 60, 30)
-			love.graphics.print("Play", love.graphics.getWidth()/2-0.5*intro.dot32.font:getWidth("Play")/2, love.graphics.getHeight()/2+70-0.5*intro.dot32.font:getHeight()/2, nil, 0.5)
+			love.graphics.rectangle("line", love.graphics.getWidth()/2-85, love.graphics.getHeight()/2+70-30+a, 170, 60, 30)
+			love.graphics.print("Play", love.graphics.getWidth()/2-0.5*intro.dot32.font:getWidth("Play")/2, love.graphics.getHeight()/2+70-0.5*intro.dot32.font:getHeight()/2+a, nil, 0.5)
 
 			love.graphics.setColour(0.35*0.7, 0.6*0.7, 0.99*0.7)
 			if love.mouse.getX() > love.graphics.getWidth()/2-160 and love.mouse.getX() < love.graphics.getWidth()/2+160 
-			and love.mouse.getY() > love.graphics.getHeight()/2+70+80-30 and love.mouse.getY() < love.graphics.getHeight()/2+70+80+30
-			or play.state == "menuTransition" 
+			and love.mouse.getY() > love.graphics.getHeight()/2+70+80-30+a and love.mouse.getY() < love.graphics.getHeight()/2+70+80+30+a
+			-- 
 			then
 				love.graphics.setColour(1,1,1)
 				love.mouse.setCursor(selected)
-				if love.mouse.isDown(1) or play.state == "menuTransition" then
+				if love.mouse.isDown(1) then-- then
 					--love.graphics.draw(menu.play.image2, love.graphics.getWidth()/2, love.graphics.getHeight()/2+50, 0, 0.5, 0.5, menu.play.image:getWidth()/2, menu.play.image:getHeight()/2)
-					love.graphics.rectangle("fill", love.graphics.getWidth()/2-160, love.graphics.getHeight()/2+70+80-30, 320, 60, 30)
-					play.state = "menuTransition"
+					love.graphics.rectangle("fill", love.graphics.getWidth()/2-160, love.graphics.getHeight()/2+70+80-30+a, 320, 60, 30)
+					--play.state = "menuTransition"
 					--sound.shoot:stop() sound.shoot:play()
 					sound.shootD:play()
 					love.mouse.setCursor()
+					menu.transitionHint = "levels"
+					menu.timer = 0
+    			menu.time = 0
 				end
 			end
-			love.graphics.rectangle("line", love.graphics.getWidth()/2-160, love.graphics.getHeight()/2+70-30 + 80, 320, 60, 30)
-			love.graphics.print("Level Select", love.graphics.getWidth()/2-0.5*intro.dot32.font:getWidth("Level Select")/2, love.graphics.getHeight()/2+70-0.5*intro.dot32.font:getHeight()/2 + 80, nil, 0.5)
+			love.graphics.rectangle("line", love.graphics.getWidth()/2-160, love.graphics.getHeight()/2+70-30+a + 80, 320, 60, 30)
+			love.graphics.print("Level Select", love.graphics.getWidth()/2-0.5*intro.dot32.font:getWidth("Level Select")/2, love.graphics.getHeight()/2+70-0.5*intro.dot32.font:getHeight()/2 + 80+a, nil, 0.5)
 
 			love.graphics.setColour(0.35*0.7, 0.6*0.7, 0.99*0.7)
 			if love.mouse.getX() > love.graphics.getWidth()/2-110 and love.mouse.getX() < love.graphics.getWidth()/2+110 
-			and love.mouse.getY() > love.graphics.getHeight()/2+70+80*2-30 and love.mouse.getY() < love.graphics.getHeight()/2+70+80*2+30
-			or play.state == "menuTransition" 
+			and love.mouse.getY() > love.graphics.getHeight()/2+70+80*2-30+a and love.mouse.getY() < love.graphics.getHeight()/2+70+80*2+30+a
+			-- 
 			then
 				love.graphics.setColour(1,1,1)
 				love.mouse.setCursor(selected)
-				if love.mouse.isDown(1) or play.state == "menuTransition" then
+				if love.mouse.isDown(1) then-- then
+					menu.transitionHint = "about"
 					--love.graphics.draw(menu.play.image2, love.graphics.getWidth()/2, love.graphics.getHeight()/2+50, 0, 0.5, 0.5, menu.play.image:getWidth()/2, menu.play.image:getHeight()/2)
-					love.graphics.rectangle("fill", love.graphics.getWidth()/2-110, love.graphics.getHeight()/2+70+80*2-30, 220, 60, 30)
-					play.state = "menuTransition"
+					love.graphics.rectangle("fill", love.graphics.getWidth()/2-110, love.graphics.getHeight()/2+70+80*2-30+a, 220, 60, 30)
+					--play.state = "menuTransition"
 					--sound.shoot:stop() sound.shoot:play()
 					sound.shootD:play()
 					love.mouse.setCursor()
 				end
 			end
-			love.graphics.rectangle("line", love.graphics.getWidth()/2-110, love.graphics.getHeight()/2+70-30 + 160, 220, 60, 30)
-			love.graphics.print("About", love.graphics.getWidth()/2-0.5*intro.dot32.font:getWidth("About")/2, love.graphics.getHeight()/2+70-0.5*intro.dot32.font:getHeight()/2 + 160, nil, 0.5)
+			love.graphics.rectangle("line", love.graphics.getWidth()/2-110, love.graphics.getHeight()/2+70-30 + 160+a, 220, 60, 30)
+			love.graphics.print("About", love.graphics.getWidth()/2-0.5*intro.dot32.font:getWidth("About")/2, love.graphics.getHeight()/2+70-0.5*intro.dot32.font:getHeight()/2 + 160+a, nil, 0.5)
 
+			love.graphics.setColour(0.35*0.7, 0.6*0.7, 0.99*0.7)
+			if love.mouse.getX() > love.graphics.getWidth()/2-85 and love.mouse.getX() < love.graphics.getWidth()/2+85 
+			and love.mouse.getY() > love.graphics.getHeight()/2+70+80*3-30+a and love.mouse.getY() < love.graphics.getHeight()/2+70+80*3+30+a
+			-- 
+			then
+				love.graphics.setColour(1,1,1)
+				love.mouse.setCursor(selected)
+				if love.mouse.isDown(1) then-- then
+					--love.graphics.draw(menu.play.image2, love.graphics.getWidth()/2, love.graphics.getHeight()/2+50, 0, 0.5, 0.5, menu.play.image:getWidth()/2, menu.play.image:getHeight()/2)
+					love.graphics.rectangle("fill", love.graphics.getWidth()/2-85, love.graphics.getHeight()/2+70+80*3-30+a, 170, 60, 30)
+					--play.state = "menuTransition"
+					--sound.shoot:stop() sound.shoot:play()
+					love.event.quit()
+					sound.shootD:play()
+					love.mouse.setCursor()
+				end
+			end
+			love.graphics.setLineWidth(5)
+			love.graphics.rectangle("line", love.graphics.getWidth()/2-85, love.graphics.getHeight()/2+70+80*3-30+a, 170, 60, 30)
+			love.graphics.print("Quit", love.graphics.getWidth()/2-0.5*intro.dot32.font:getWidth("Quit")/2, love.graphics.getHeight()/2+70-0.5*intro.dot32.font:getHeight()/2+a +80*3, nil, 0.5)
 			--love.graphics.draw(menu.play.image, love.graphics.getWidth()/2, love.graphics.getHeight()/2+50, 0, 0.5, 0.5, menu.play.image:getWidth()/2, menu.play.image:getHeight()/2)
+		end
+	end
+
+	if play.state == "levels" then
+		love.graphics.setColour(0.35*0.7, 0.6*0.7, 0.99*0.7)
+		love.graphics.print("Level Select", menu.tiny.x-intro.dot32.font:getWidth("Level Select")/2*0.5, 50, 0, 0.5)
+	
+		love.mouse.setCursor()
+		for i=1, #map do
+
+			if map[i].beaten then
+				love.graphics.setColour(0.7, 0.55, 0.41)
+				love.graphics.rectangle("fill", 120*i-20, 150, 100, 100)
+				love.graphics.setColour(0.49, 0.31, 0.25)
+				for j=1, #map[i] do
+					if map[i][j].o == "wall" then
+						love.graphics.rectangle("fill", (map[i][j].x)/8+120*i-20, (map[i][j].y)/6+150, map[i][j].w/8, map[i][j].h/6)
+					end
+				end
+			end
+
+			if love.mouse.getX() > 120*i-20 and love.mouse.getX() < 120*i+80
+			and love.mouse.getY() > 150 and love.mouse.getY() < 150+100
+			then
+				love.mouse.setCursor(selected)
+				love.graphics.setColour(1,1,1)
+				if love.mouse.isDown(1) then
+					menu.transitionHint = i
+					menu.timer = 0
+    			menu.time = 0
+				end
+			else
+				love.graphics.setColour(0.35*0.7, 0.6*0.7, 0.99*0.7)
+			end
+			love.graphics.rectangle("line", 120*i-20, 150, 100, 100, 5)
+			love.graphics.setColour(1,1,1)
+			love.graphics.print(i, 120*i-10, 150+10, nil, 0.5)
 		end
 	end
 
@@ -499,7 +598,9 @@ function Play.draw()
 
 
 
-	if not (play.state == "menu" or play.state == "menuTransition") then
+
+
+	if not (play.state == "menu"  or play.state == "levels") then
 		love.graphics.setColour(0.7, 0.55, 0.41)
 		love.graphics.rectangle("fill", coordinate("x", 0), coordinate("y", 0), 800*zoom, 600*zoom)
 
@@ -525,7 +626,7 @@ function Play.draw()
 		end
 
 		--love.graphics.print(varToString(evil), 10, 10, 0, 0.2)
-		love.graphics.print(player.xV, 10, 10, 0, 0.2)
+		love.graphics.print(menu.transitionHint, 10, 10, 0, 0.2)
 		
 		if player.hitTimer > 0 then
 			love.graphics.setColour(1,1,0)
@@ -574,14 +675,15 @@ function Play.draw()
 		end
 
 		if menu.levelTimer < 3 then
+			a = love.graphics.getHeight()-50
 			love.graphics.setColour(0,0,0, 0.5-(math.max(menu.levelTimer, 2.5)-2.5))
-			love.graphics.rectangle("fill", 0, 550, intro.dot32.font:getWidth("Level "..play.state)*0.3+45, 50)
+			love.graphics.rectangle("fill", 0, a, intro.dot32.font:getWidth("Level "..play.state)*0.3+45, 50)
 			love.graphics.setColour(1,1,1)
-			love.graphics.print("Level "..play.state, 20, 555, nil, 0.3)
+			love.graphics.print("Level "..play.state, 20, a+5, nil, 0.3)
 		end
 
 		if player.health <= 0 then
-			local a = 550
+			local a = love.graphics.getHeight()-50
 			if menu.levelTimer < 3 then
 				a = a - 50
 			end
@@ -596,7 +698,7 @@ function Play.draw()
 		end
 
 		if menu.pause == true then
-			local a = 550
+			local a = love.graphics.getHeight()-50
 			if menu.levelTimer < 3 then
 				a = a - 50
 			end
@@ -611,7 +713,7 @@ function Play.draw()
 	end
 
 	love.graphics.setColour(0.2,0.2,0.2)
-	love.graphics.rectangle("fill", menu.play.transitionX*faenBoolean(play.state == "menu" or play.state == "menuTransition"or menu.timer ~= false), 0, love.graphics.getWidth()-menu.play.transitionX, love.graphics.getHeight())
+	love.graphics.rectangle("fill", menu.play.transitionX*faenBoolean(play.state == "menu" or menu.timer ~= false), 0, love.graphics.getWidth()-menu.play.transitionX, love.graphics.getHeight())
 end
 
 
@@ -751,7 +853,9 @@ end
 
 function manDown()
 	if #evil == 0 then 
+		menu.transitionHint = ""
 		menu.timer = 0
+		map[play.state].beaten = true
 	end
 end
 
@@ -775,11 +879,14 @@ function love.keypressed(key)
   end
   if key == "r" and play.state ~= "menu" and play.state ~= "menuTransition" then
     --setLevel(play.state)
+    menu.transitionHint = play.state
     menu.timer = 0
     menu.time = 0
   end
   if key == "escape" and play.state ~= "menu" and play.state ~= "menuTransition" then
-    setLevel(-1)
+    menu.transitionHint = "menu"
+		menu.timer = 0
+    menu.time = 0
   end
   if key == "p" and play.state ~= "menu" and play.state ~= "menuTransition" then
     if menu.pause then
@@ -792,4 +899,13 @@ end
 
 function sign(x)
   return x>0 and 1 or x<0 and -1 or 0
+end
+
+function love.focus(f)
+  if f then
+    print("Window is focused.")
+  elseif map[play.state] ~= nil then
+    print("Window is not focused.")
+    menu.pause = true
+  end
 end
