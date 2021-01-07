@@ -206,6 +206,9 @@ function Play.update(dt)
 	menu.tank.y = menu.tank.y + menu.tank.yV
 
 	--[[THe actual gAmeplay]]
+	if love.mouse.isDown(1) and player.attackTimer > 0.4 and player.health > 0 then
+		menu.pause = false
+	end
 	if not (play.state == "menu"  or play.state == "levels" or play.state == "about") and menu.pause == false then
 		player.turretLength = player.turretLength + (30-player.turretLength)*0.25
 
@@ -452,6 +455,7 @@ end
 
 function Play.draw()
 	love.graphics.translate(math.floor(camera.x), math.floor(camera.y))
+	love.graphics.print(menu.transitionHint, 10, 10, 0, 0.2)
 
 	if play.state == "menu"  then
 		love.mouse.setCursor()
@@ -543,6 +547,7 @@ function Play.draw()
 					love.graphics.rectangle("fill", love.graphics.getWidth()/2-85, love.graphics.getHeight()/2+70+80*3-30+a, 170, 60, 30)
 					--play.state = "menuTransition"
 					--sound.shoot:stop() sound.shoot:play()
+					toFile()
 					love.event.quit()
 					sound.shootD:play()
 					love.mouse.setCursor()
@@ -635,6 +640,17 @@ function Play.draw()
 		I'm Dot32, and this is my second finished game made
 		within the Love2D framework, the source code is on my
 		Github page (@Dot32IsCool) for anybody interested.
+
+
+
+
+
+
+
+
+
+		Sound effects were made by smashing a fidget spinner 
+		against my laptop lmfao
 		]]
 		local c = [[
 		
@@ -720,7 +736,6 @@ function Play.draw()
 		end
 
 		--love.graphics.print(varToString(evil), 10, 10, 0, 0.2)
-		love.graphics.print(menu.transitionHint, 10, 10, 0, 0.2)
 		
 		if player.hitTimer > 0 then
 			love.graphics.setColour(1,1,0)
@@ -802,7 +817,7 @@ function Play.draw()
 			love.graphics.setColour(1,0.7,0, 0.5)
 			love.graphics.rectangle("fill", 0, a, intro.dot32.font:getWidth('The game has been paused. Press "P" to unpause')*0.3+45, 50)
 			love.graphics.setColour(1,1,1)
-			love.graphics.print('The game has been paused. Press "P" to unpause', 20, a+5, nil, 0.3)
+			love.graphics.print('The game has been paused. Press "P" or click to unpause', 20, a+5, nil, 0.3)
 		end
 	end
 
@@ -950,6 +965,7 @@ function manDown()
 		menu.transitionHint = ""
 		menu.timer = 0
 		map[play.state].beaten = true
+		toFile()
 	end
 end
 
@@ -1002,4 +1018,17 @@ function love.focus(f)
     print("Window is not focused.")
     menu.pause = true
   end
+end
+
+function fromFile()
+	if love.filesystem.getInfo("completed levels.lua") ~= nil then
+		local r =  love.filesystem.load("completed levels.lua")
+		return r()
+	else
+		return {false,false,false,false,false}
+	end
+end
+
+function toFile()
+	love.filesystem.write("completed levels.lua", "return"..varToString({map[1].beaten, map[2].beaten, map[3].beaten, map[4].beaten, map[5].beaten}))
 end
