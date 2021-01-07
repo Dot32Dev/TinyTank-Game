@@ -206,7 +206,7 @@ function Play.update(dt)
 	menu.tank.y = menu.tank.y + menu.tank.yV
 
 	--[[THe actual gAmeplay]]
-	if not (play.state == "menu"  or play.state == "levels") and menu.pause == false then
+	if not (play.state == "menu"  or play.state == "levels" or play.state == "about") and menu.pause == false then
 		player.turretLength = player.turretLength + (30-player.turretLength)*0.25
 
 		if (love.keyboard.isDown("right") or love.keyboard.isDown("d")) and player.health > 0 then
@@ -517,13 +517,15 @@ function Play.draw()
 				love.graphics.setColour(1,1,1)
 				love.mouse.setCursor(selected)
 				if love.mouse.isDown(1) then-- then
-					menu.transitionHint = "about"
 					--love.graphics.draw(menu.play.image2, love.graphics.getWidth()/2, love.graphics.getHeight()/2+50, 0, 0.5, 0.5, menu.play.image:getWidth()/2, menu.play.image:getHeight()/2)
 					love.graphics.rectangle("fill", love.graphics.getWidth()/2-110, love.graphics.getHeight()/2+70+80*2-30+a, 220, 60, 30)
 					--play.state = "menuTransition"
 					--sound.shoot:stop() sound.shoot:play()
 					sound.shootD:play()
 					love.mouse.setCursor()
+					menu.transitionHint = "about"
+					menu.timer = 0
+    			menu.time = 0
 				end
 			end
 			love.graphics.rectangle("line", love.graphics.getWidth()/2-110, love.graphics.getHeight()/2+70-30 + 160+a, 220, 60, 30)
@@ -587,7 +589,100 @@ function Play.draw()
 			love.graphics.rectangle("line", 120*i-20, 150, 100, 100, 5)
 			love.graphics.setColour(1,1,1)
 			love.graphics.print(i, 120*i-10, 150+10, nil, 0.5)
+
+			local a = -50
+			love.graphics.setColour(0.35*0.7, 0.6*0.7, 0.99*0.7)
+			if love.mouse.getX() > love.graphics.getWidth()/2-85 and love.mouse.getX() < love.graphics.getWidth()/2+85 
+			and love.mouse.getY() > love.graphics.getHeight()/2+70+80*3-30+a and love.mouse.getY() < love.graphics.getHeight()/2+70+80*3+30+a
+			-- 
+			then
+				love.graphics.setColour(1,1,1)
+				love.mouse.setCursor(selected)
+				if love.mouse.isDown(1) then-- then
+					--love.graphics.draw(menu.play.image2, love.graphics.getWidth()/2, love.graphics.getHeight()/2+50, 0, 0.5, 0.5, menu.play.image:getWidth()/2, menu.play.image:getHeight()/2)
+					love.graphics.rectangle("fill", love.graphics.getWidth()/2-85, love.graphics.getHeight()/2+70+80*3-30+a, 170, 60, 30)
+					--play.state = "menuTransition"
+					--sound.shoot:stop() sound.shoot:play()
+					sound.shootD:play()
+					love.mouse.setCursor()
+					menu.transitionHint = "menu"
+					menu.timer = 0
+    			menu.time = 0
+				end
+			end
+			love.graphics.setLineWidth(5)
+			love.graphics.rectangle("line", love.graphics.getWidth()/2-85, love.graphics.getHeight()/2+70+80*3-30+a, 170, 60, 30)
+			love.graphics.print("Back", love.graphics.getWidth()/2-0.3*intro.dot32.font:getWidth("Back")/2, love.graphics.getHeight()/2+70-0.3*intro.dot32.font:getHeight()/2+a +80*3, nil, 0.3)
 		end
+
+
+	end
+
+	if play.state == "about" then
+		love.graphics.setColour(0.35*0.7, 0.6*0.7, 0.99*0.7)
+		love.graphics.print("About", menu.tiny.x-intro.dot32.font:getWidth("About")/2*0.5, 50, 0, 0.5)
+
+		local a = -50
+		local b = [[
+		This version of Tiny Tank is based off an original
+		scratch version, made in 2018!
+		play it here: 
+
+		WASD/arrow keys to move, click to shoot
+		R to restart, ESC to go to menu
+		P to pause during gameplay
+
+		I'm Dot32, and this is my second finished game made
+		within the Love2D framework, the source code is on my
+		Github page (@Dot32IsCool) for anybody interested.
+		]]
+		local c = [[
+		
+
+							 https://scratch.mit.edu/projects/257184821/
+		]]
+		love.graphics.print(b, love.graphics.getWidth()/2-intro.dot32.font:getWidth(b)/2*0.25, 150, 0, 0.25)
+		love.graphics.setColour(1,1,1)
+		local d = love.graphics.getWidth()/2+intro.dot32.font:getWidth(b)/2*0.25 + 30
+		local e = d - intro.dot32.font:getWidth("https://scratch.mit.edu/projects/257184821/")*0.25
+		love.mouse.setCursor()
+		if love.mouse.getX() > e and love.mouse.getX() < d 
+		and	love.mouse.getY() > 215 and love.mouse.getY() < 215+intro.dot32.font:getHeight()*0.25
+		then
+			love.graphics.setColour(0.35*0.7, 0.6*0.7, 0.99*0.7)
+			love.graphics.rectangle("fill", e, 210, d-e, intro.dot32.font:getHeight()*0.25+10, 10)
+			love.graphics.setColour(1,1,1)
+			love.mouse.setCursor(selected)
+			if love.mouse.isDown(1) and player.attackTimer > 0.5 then
+				love.system.openURL("https://scratch.mit.edu/projects/257184821/fullscreen/")
+				player.attackTimer = 0
+				sound.shootD:play()
+			end
+		end
+		love.graphics.print(c, love.graphics.getWidth()/2-intro.dot32.font:getWidth(b)/2*0.25, 150, 0, 0.25)
+
+		love.graphics.setColour(0.35*0.7, 0.6*0.7, 0.99*0.7)
+			if love.mouse.getX() > love.graphics.getWidth()/2-85 and love.mouse.getX() < love.graphics.getWidth()/2+85 
+			and love.mouse.getY() > love.graphics.getHeight()/2+70+80*3-30+a and love.mouse.getY() < love.graphics.getHeight()/2+70+80*3+30+a
+			-- 
+			then
+				love.graphics.setColour(1,1,1)
+				love.mouse.setCursor(selected)
+				if love.mouse.isDown(1) then-- then
+					--love.graphics.draw(menu.play.image2, love.graphics.getWidth()/2, love.graphics.getHeight()/2+50, 0, 0.5, 0.5, menu.play.image:getWidth()/2, menu.play.image:getHeight()/2)
+					love.graphics.rectangle("fill", love.graphics.getWidth()/2-85, love.graphics.getHeight()/2+70+80*3-30+a, 170, 60, 30)
+					--play.state = "menuTransition"
+					--sound.shoot:stop() sound.shoot:play()
+					sound.shootD:play()
+					love.mouse.setCursor()
+					menu.transitionHint = "menu"
+					menu.timer = 0
+    			menu.time = 0
+				end
+			end
+			love.graphics.setLineWidth(5)
+			love.graphics.rectangle("line", love.graphics.getWidth()/2-85, love.graphics.getHeight()/2+70+80*3-30+a, 170, 60, 30)
+			love.graphics.print("Back", love.graphics.getWidth()/2-0.3*intro.dot32.font:getWidth("Back")/2, love.graphics.getHeight()/2+70-0.3*intro.dot32.font:getHeight()/2+a +80*3, nil, 0.3)
 	end
 
 
@@ -599,7 +694,7 @@ function Play.draw()
 
 
 
-	if not (play.state == "menu"  or play.state == "levels") then
+	if not (play.state == "menu"  or play.state == "levels" or play.state == "about") then
 		love.graphics.setColour(0.7, 0.55, 0.41)
 		love.graphics.rectangle("fill", coordinate("x", 0), coordinate("y", 0), 800*zoom, 600*zoom)
 
@@ -712,7 +807,7 @@ function Play.draw()
 	end
 
 	love.graphics.setColour(0.2,0.2,0.2)
-	love.graphics.rectangle("fill", menu.play.transitionX*faenBoolean(play.state == "menu" or menu.timer ~= false), 0, love.graphics.getWidth()-menu.play.transitionX, love.graphics.getHeight())
+	love.graphics.rectangle("fill", menu.play.transitionX*faenBoolean(menu.timer ~= false), 0, love.graphics.getWidth()-menu.play.transitionX, love.graphics.getHeight())
 end
 
 
