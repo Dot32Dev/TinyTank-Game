@@ -815,7 +815,7 @@ function Play.draw()
 				a = a - 100
 			end
 			love.graphics.setColour(1,0.7,0, 0.5)
-			love.graphics.rectangle("fill", 0, a, intro.dot32.font:getWidth('The game has been paused. Press "P" to unpause')*0.3+45, 50)
+			love.graphics.rectangle("fill", 0, a, intro.dot32.font:getWidth('The game has been paused. Press "P" or click to unpause')*0.3+45, 50)
 			love.graphics.setColour(1,1,1)
 			love.graphics.print('The game has been paused. Press "P" or click to unpause', 20, a+5, nil, 0.3)
 		end
