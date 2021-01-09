@@ -53,6 +53,8 @@ function Play.load()
 	player.turretLength = 30
 	player.turretWidth = 16
 	player.health = 100
+	player.toX = 0
+	player.yoY = 0
 
 	sound.shoot = love.audio.newSource("Shots Fired.wav", "static")
 	sound.shootD = love.audio.newSource("Shots Fired Deep.wav", "static")
@@ -743,7 +745,11 @@ function Play.draw()
 		if player.health > 0 then
 			love.graphics.circle("fill", coordinate("x", player.x), coordinate("y", player.y), 20*zoom, 30*zoom)
 			love.graphics.setLineWidth(player.turretWidth*zoom)
-			love.graphics.line(coordinate("x", player.x), coordinate("y", player.y), coordinate("x", player.x)+math.sin(math.atan2(coordinate("x", player.x) - love.mouse.getX(), coordinate("y", player.y) - love.mouse.getY())+math.pi)*player.turretLength*zoom, coordinate("y", player.y)+math.cos(math.atan2(coordinate("x", player.x) - love.mouse.getX(), coordinate("y", player.y) - love.mouse.getY())+math.pi)*player.turretLength*zoom)
+			if not menu.pause then
+				player.toX = coordinate("x", player.x)+math.sin(math.atan2(coordinate("x", player.x) - love.mouse.getX(), coordinate("y", player.y) - love.mouse.getY())+math.pi)*player.turretLength*zoom
+				player.toY = coordinate("y", player.y)+math.cos(math.atan2(coordinate("x", player.x) - love.mouse.getX(), coordinate("y", player.y) - love.mouse.getY())+math.pi)*player.turretLength*zoom
+			end
+			love.graphics.line(coordinate("x", player.x), coordinate("y", player.y), player.toX, player.toY)
 			love.graphics.setColour(0.35, 0.6, 0.99)
 			if player.hitTimer > 0 then
 				love.graphics.setColour(1,1,0)
@@ -987,7 +993,7 @@ function love.keypressed(key)
   if key == "f11" and operatingSystem == "Windows" then
       love.window.setFullscreen(true)
   end
-  if key == "r" and play.state ~= "menu" and play.state ~= "menuTransition" then
+  if key == "r" and play.state ~= "menu" and play.state ~= "menuTransition" and menu.timer == false then
     --setLevel(play.state)
     menu.transitionHint = play.state
     menu.timer = 0
