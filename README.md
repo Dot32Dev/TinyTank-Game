@@ -15,4 +15,4 @@ alternatively after step one you can download the .love from the repositorys rel
 ### Screenshots:
 ![screenshot1](https://cdn.discordapp.com/attachments/577832597686583310/796681666981658624/Screen_Shot_2021-01-07_at_6.00.19_pm.png)
 ![screenshot2](https://cdn.discordapp.com/attachments/577832597686583310/796682219325358100/Screen_Shot_2021-01-07_at_6.10.31_pm.png)
-![code screenshot](hhttps://cdn.discordapp.com/attachments/577832597686583310/798381114862338058/Screen_Shot_2021-01-12_at_10.41.11_am.png)
+![code screenshot](https://cdn.discordapp.com/attachments/577832597686583310/798381114862338058/Screen_Shot_2021-01-12_at_10.41.11_am.png)
