@@ -568,20 +568,22 @@ function Play.draw()
 	
 		love.mouse.setCursor()
 		for i=1, #map do
+			y = 120*math.floor(i/6)+120+30
+			x = 120*((i%6)-1)+(y-150) + (love.graphics.getWidth()-600)/2
 
 			if map[i].beaten then
 				love.graphics.setColour(0.7, 0.55, 0.41)
-				love.graphics.rectangle("fill", 120*i-20, 150, 100, 100)
+				love.graphics.rectangle("fill", x, y, 100, 100)
 				love.graphics.setColour(0.49, 0.31, 0.25)
 				for j=1, #map[i] do
 					if map[i][j].o == "wall" then
-						love.graphics.rectangle("fill", (map[i][j].x)/8+120*i-20, (map[i][j].y)/6+150, map[i][j].w/8, map[i][j].h/6)
+						love.graphics.rectangle("fill", (map[i][j].x)/8+x, (map[i][j].y)/6+y, map[i][j].w/8, map[i][j].h/6)
 					end
 				end
 			end
 
-			if love.mouse.getX() > 120*i-20 and love.mouse.getX() < 120*i+80
-			and love.mouse.getY() > 150 and love.mouse.getY() < 150+100
+			if love.mouse.getX() > x and love.mouse.getX() < x+100
+			and love.mouse.getY() > y and love.mouse.getY() < y+100
 			then
 				love.mouse.setCursor(selected)
 				love.graphics.setColour(1,1,1)
@@ -593,9 +595,9 @@ function Play.draw()
 			else
 				love.graphics.setColour(0.35*0.7, 0.6*0.7, 0.99*0.7)
 			end
-			love.graphics.rectangle("line", 120*i-20, 150, 100, 100, 5)
+			love.graphics.rectangle("line", x, y, 100, 100, 5)
 			love.graphics.setColour(1,1,1)
-			love.graphics.print(i, 120*i-10, 150+10, nil, 0.5)
+			love.graphics.print(i, x, y+10, nil, 0.5)
 
 			local a = -50
 			love.graphics.setColour(0.35*0.7, 0.6*0.7, 0.99*0.7)
@@ -1005,11 +1007,7 @@ function love.keypressed(key)
     menu.time = 0
   end
   if key == "p" and play.state ~= "menu" and play.state ~= "menuTransition" then
-    if menu.pause then
-    	menu.pause = false
-    else
-    	menu.pause = true
-    end
+    menu.pause = not menu.pause
   end
 end
 
