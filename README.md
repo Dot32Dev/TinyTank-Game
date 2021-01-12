@@ -5,7 +5,6 @@ Fight your way through a series of levels with intelligent AI and try not to die
 This game also features circle VS rectangle collision for the player/AI VS walls.
 
 ### How to run:
-alternatively after step one you can download the .love from the repositorys release page [here](https://github.com/Dot32IsCool/TinyTank-Love2D-Game/releases)
 Download the .exe/.app from the repositorys release page [here](https://github.com/Dot32IsCool/TinyTank-Love2D-Game/releases) or install the [Love2D Lua framework](https://love2d.org/) and get the source code .love file.
 
 ### Screenshots:
