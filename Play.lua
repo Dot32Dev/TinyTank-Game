@@ -989,10 +989,7 @@ function circle_Rectangle(circle, rectangle) --circle is in the format of {x=, y
 end
 
 function love.keypressed(key)
-  if key == "f" and love.keyboard.isDown("lgui") and love.keyboard.isDown("lctrl") and operatingSystem == "OS X" then
-      love.window.setFullscreen(true)
-  end
-  if key == "f11" and operatingSystem == "Windows" then
+  if key == "f11" and love.system.getOS() == "Windows" then
       love.window.setFullscreen(true)
   end
   if key == "r" and play.state ~= "menu" and play.state ~= "menuTransition" and menu.timer == false then
@@ -1027,12 +1024,18 @@ end
 function fromFile()
 	if love.filesystem.getInfo("completed levels.lua") ~= nil then
 		local r =  love.filesystem.load("completed levels.lua")
-		return r()
+		t = r()
+		if not #t == 9 then
+			for i=#t, 9 do
+				t[i] = false
+			end
+		end
+		return t
 	else
-		return {false,false,false,false,false}
+		return {false,false,false,false,false,false,false,false,false}
 	end
 end
 
 function toFile()
-	love.filesystem.write("completed levels.lua", "return"..varToString({map[1].beaten, map[2].beaten, map[3].beaten, map[4].beaten, map[5].beaten}))
+	love.filesystem.write("completed levels.lua", "return"..varToString({map[1].beaten, map[2].beaten, map[3].beaten, map[4].beaten, map[5].beaten, map[6].beaten, map[7].beaten, map[8].beaten, map[9].beaten}))
 end
