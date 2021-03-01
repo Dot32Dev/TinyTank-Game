@@ -6,6 +6,7 @@ This game also features circle VS rectangle collision for the player/AI VS walls
 
 ### How to play:
 Download the .exe/.app from the repositorys release page [here](https://github.com/Dot32IsCool/TinyTank-Love2D-Game/releases) or install the [Love2D Lua framework](https://love2d.org/) and get the source code .love file.
+This game is also available for free download on [Itch](https://dot32.itch.io/tiny-tank)!
 
 ### Screenshots:
 ![screenshot1](https://cdn.discordapp.com/attachments/577832597686583310/796681666981658624/Screen_Shot_2021-01-07_at_6.00.19_pm.png)
