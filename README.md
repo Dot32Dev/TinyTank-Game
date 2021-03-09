@@ -1,5 +1,5 @@
 # TinyTank
-A recreation of an old scratch game of mine called Tiny Tank, this time with built with Love2D! Play the original here: (https://scratch.mit.edu/projects/82253834/)
+A recreation of an old scratch game of mine called Tiny Tank, this time built with Love2D! Play the original here: (https://scratch.mit.edu/projects/82253834/)
 
 Fight your way through a series of levels with intelligent AI and try not to die!
 This game also features circle VS rectangle collision for the player/AI VS walls.
