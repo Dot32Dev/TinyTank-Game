@@ -68,7 +68,7 @@ function DotLib.load(menuText, mainc, highc, menuButtons)
 
   --[[Creates a new menu with my menu library]]
   if config.menu == true then 
-    require("DotLib/Menu/menu")
+    require("DotLib.Menu")
     menu.text = menuText
     menu.hash = #menuButtons
     mainMenu = newMenu({mainc[1], mainc[2], mainc[3]},{highc[1], highc[2], highc[3]},menuButtons)
