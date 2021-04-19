@@ -35,27 +35,27 @@ map[5] = {beaten = a[5],
 	{o = "evil", x = 700, y = 100}
 }
 
-map[6] = {beaten = a[5],
+map[6] = {beaten = a[6],
 	{o = "wall", x = 300, y = 200, w = 200, h = 200},
 	{o = "evil", x = 700, y = 300},
 	{o = "evil", x = 700, y = 100}
 }
 
-map[7] = {beaten = a[5],
+map[7] = {beaten = a[7],
 	{o = "wall", x = 250, y = 200, w = 75, h = 400}, 
 	{o = "wall", x = 525, y = 0, w = 75, h = 400}, 
 	{o = "evil", x = 700, y = 50},
 	{o = "evil", x = 375, y = 500}
 }
 
-map[8] = {beaten = a[5],
+map[8] = {beaten = a[8],
 	{o = "wall", x = 0, y = 300, w = 300, h = 100}, 
 	{o = "wall", x = 400, y = 300, w = 100, h = 300}, 
 	{o = "evil", x = 700, y = 50},
 	{o = "evil", x = 375, y = 500}
 }
 
-map[9] = {beaten = a[5],
+map[9] = {beaten = a[9],
 	{o = "wall", x = 300, y = 0, w = 500, h = 100}, 
 	{o = "wall", x = 200, y = 300, w = 300, h = 300}, 
 	{o = "evil", x = 700, y = 200},
