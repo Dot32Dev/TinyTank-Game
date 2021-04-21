@@ -10,8 +10,9 @@ local camera = {}
 local debugy = ""
 
 local selected = love.mouse.getSystemCursor("hand")
-local ConnectedController = false
+local connectedController = false
 local preferMouse = true
+local lastJoystickX = {0,0}
 
 player.bullets = {}
 evil.bullets = {}
@@ -235,6 +236,15 @@ function Play.update(dt)
 	end
 	if not (play.state == "menu"  or play.state == "levels" or play.state == "about") and menu.pause == false then
 		player.turretLength = player.turretLength + (30-player.turretLength)*0.25
+
+		if connectedController then
+			if (connectedController:getGamepadAxis("leftx") ~= lastJoystickX[1]) or (connectedController:getGamepadAxis("rightx") ~= lastJoystickX[2]) then
+				lastJoystickX[1] = connectedController:getGamepadAxis("leftx")
+				lastJoystickX[2] = connectedController:getGamepadAxis("rightx")
+
+				preferMouse = false
+			end
+		end
 
 		if (love.keyboard.isDown("right") or love.keyboard.isDown("d")) and player.health > 0 then
 			player.xV = player.xV +1*2/3*60*dt
@@ -495,6 +505,8 @@ local draw = [[
 function Play.draw()
 	love.graphics.translate(math.floor(camera.x), math.floor(camera.y))
 	love.graphics.print(menu.transitionHint, 10, 10, 0, 0.2)
+	love.graphics.print(tostring(preferMouse), 10, 10, 0, 0.2)
+	love.graphics.print(tostring(connectedController and (connectedController:getGamepadAxis("leftx"))), 10, 30, 0, 0.2)
 
 	if play.state == "menu"  then
 		love.mouse.setCursor()
@@ -1005,14 +1017,16 @@ function toFile()
 end
 
 function love.joystickadded(j)
-	if not ConnectedController then
-		ConnectedController = j
+	if not connectedController then
+		connectedController = j
+		preferMouse = false
 	end
 end
 
 function love.joystickremoved(j)
-	if j == ConnectedController then
-		ConnectedController = false
+	if j == connectedController then
+		connectedController = false
+		preferMouse = true
 	end
 end
 
