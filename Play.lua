@@ -530,8 +530,11 @@ function Play.draw()
 	
 		love.mouse.setCursor()
 		for i=1, #map do
-			y = 120*math.floor(i/6)+120+30
-			x = 120*((i%6)-1)+(y-150) + (love.graphics.getWidth()-600)/2
+			-- y = 120*math.floor(i/6)+120+30
+			-- x = 120*((i%6)-1)+(y-150) + (love.graphics.getWidth()-600)/2
+			local width = 3
+			x = 120*((i-1) % 3) + love.graphics.getWidth()/2 - width*120*0.5
+			y = 120*math.floor((i-1) / 3) + 120 + 30
 
 			if map[i].beaten then
 				love.graphics.setColour(0.7, 0.55, 0.41)
